@@ -7,9 +7,11 @@ public class DamageDealer : MonoBehaviour
 
     private Player player;
     private CharacterStats[] possibleTargets;
+    private Animator animator;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         player = GetComponent<Player>();
     }
 
@@ -26,6 +28,7 @@ public class DamageDealer : MonoBehaviour
         }
         else if (player.AttackRoll())
         {
+            animator.SetTrigger("attack");
             int damage = Random.Range(2, 6);
             player.target.health -= damage;
             player.CombatLog(gameObject.name + " damaged " + player.target.name + " for " + damage + " damage");

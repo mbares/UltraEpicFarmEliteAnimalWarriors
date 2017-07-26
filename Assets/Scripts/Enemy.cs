@@ -25,8 +25,8 @@ public class Enemy : MonoBehaviour
         foreach (CharacterStats character in possibleTargets)
         {
             if(character.isFriendly && character.taunt)
-            {
-                target = character;
+            {               
+                target = character;              
                 return;
             }
         }

@@ -5,9 +5,11 @@ using UnityEngine;
 public class Wizard : MonoBehaviour
 {
     private Player player;
+    private Animator animator;
 
     private void Start()
     {
+        animator = GetComponent<Animator>();
         player = GetComponent<Player>();
     }
 
@@ -24,6 +26,7 @@ public class Wizard : MonoBehaviour
         }
         else if (player.AttackRoll())
         {
+            animator.SetTrigger("attack");
             int damage = Random.Range(1, 4);
             player.target.health -= damage;
             player.CombatLog(gameObject.name + " damaged " + player.target.name + " for " + damage + " damage");
@@ -50,6 +53,7 @@ public class Wizard : MonoBehaviour
         }       
         else
         {
+            animator.SetTrigger("heal");
             int heal = Random.Range(1, 6);
             player.target.health += heal;
             player.CombatLog(gameObject.name + " healed " + player.target.name + " for " + heal);
