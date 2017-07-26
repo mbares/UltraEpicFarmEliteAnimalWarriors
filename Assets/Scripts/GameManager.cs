@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
         NextTurn();
         for(int i=0; i<turnOrder.Count; i++)
         {
-            Debug.Log(turnOrder[i]);
+            Debug.Log("Turn order " + i + ": " + turnOrder[i]);
         }
         
     }
@@ -62,12 +62,16 @@ public class GameManager : MonoBehaviour
         turnOrder = turnOrder.OrderByDescending(turnOrder => turnOrder.initiative).ToList();
         for (int i = 0; i < turnOrder.Count; i++)
         {
-            Debug.Log(turnOrder[i]);
+            Debug.Log("Turn order " + i + ": " + turnOrder[i]);
         }
     }
 
     public void NextTurn()
     {
+        if (turnCounter >= turnOrder.Count)
+        {
+            turnCounter = 0;
+        }
         Abilities();
         CharacterStats.onTurn = turnOrder[turnCounter];
         turnOrder[turnCounter].TurnStatCalculation();

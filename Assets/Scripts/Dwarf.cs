@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Dwarf : MonoBehaviour
 {
-    private Enemy enemy;
-    
+    private Enemy enemy;    
 
     private void Start()
     {
@@ -16,8 +15,8 @@ public class Dwarf : MonoBehaviour
     {
         if (CharacterStats.onTurn == this.GetComponent<CharacterStats>() && !enemy.attacked)
         {
-            Attack();
             enemy.attacked = true;
+            Attack();           
         }
     }
 

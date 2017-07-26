@@ -14,7 +14,7 @@ public class CharacterStats : MonoBehaviour
     public bool isFriendly = false;
     public SpriteRenderer spotLightRenderer;
 
-    public static GameObject isMouseTargeted = null;
+    public static GameObject mouseTargetedCharacter = null;
     public static CharacterStats onTurn = null;
 
     private GameManager gameManager;
@@ -35,7 +35,7 @@ public class CharacterStats : MonoBehaviour
 
     private void Update()
     {
-        if (isMouseTargeted != this.gameObject)
+        if (mouseTargetedCharacter != this.gameObject)
         {
             GetComponent<SpriteRenderer>().color = Color.white;
         }
@@ -69,14 +69,18 @@ public class CharacterStats : MonoBehaviour
     }
     void Die()
     {
-        Destroy(gameObject);
-        foreach (CharacterStats character in gameManager.turnOrder)
+        if (mouseTargetedCharacter = this.gameObject)
         {
-            if(character == null)
-            {
-                gameManager.turnOrder.Remove(character);
-            }
-        }        
+            mouseTargetedCharacter = null;
+        }
+              
+        gameManager.turnOrder.Remove(this);
+       
+        for (int i = 0; i < gameManager.turnOrder.Count; i++)
+        {
+            Debug.Log("Turn order " + i + ": " +gameManager.turnOrder[i]);
+        }
+        Destroy(gameObject);
     }
 
     void DeadBlinkOff()
@@ -91,13 +95,13 @@ public class CharacterStats : MonoBehaviour
 
     private void OnMouseDown()
     {
-        isMouseTargeted = this.gameObject;
+        mouseTargetedCharacter = this.gameObject;
         
-        if (isFriendly && isMouseTargeted == this.gameObject)
+        if (isFriendly && mouseTargetedCharacter == this.gameObject)
         {
             GetComponent<SpriteRenderer>().color = Color.green;
         }
-        else if (!isFriendly && isMouseTargeted == this.gameObject)
+        else if (!isFriendly && mouseTargetedCharacter == this.gameObject)
         {
             GetComponent<SpriteRenderer>().color = Color.red;
         }

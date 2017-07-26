@@ -20,8 +20,8 @@ public class SnowWhite : MonoBehaviour
     {
         if (CharacterStats.onTurn == this.GetComponent<CharacterStats>() && !enemy.attacked)
         {
-            Attack();
             enemy.attacked = true;
+            Attack();           
         }
     }
 

@@ -27,7 +27,7 @@ public class Player : MonoBehaviour
 
     public void ChooseTarget()
     {
-        target = CharacterStats.isMouseTargeted.GetComponent<CharacterStats>();
+        target = CharacterStats.mouseTargetedCharacter.GetComponent<CharacterStats>();
     }
 
     public void EndTurn()
