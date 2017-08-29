@@ -4,16 +4,15 @@ using UnityEngine;
 
 public class SnowWhite : MonoBehaviour
 {
-    public GameObject [] dwarves;
-    
+    public GameObject [] dwarves;    
     
     private Enemy enemy;
-    private GameManager gameManager;
+    private Animator animator;
 
     private void Start()
     {
         enemy = GetComponent<Enemy>();
-        gameManager = FindObjectOfType<GameManager>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
@@ -30,16 +29,18 @@ public class SnowWhite : MonoBehaviour
         int randomAbility;
         randomAbility = Random.Range(1, 3);
         string ability = "Ability" + randomAbility.ToString();
-        Invoke(ability, 1f);
+        Invoke(ability, 2f);
     }
 
+    //Attack for 2 dmg and poison the target for 2-3 dmg for 2 rounds
     public void Ability1()
     {
         enemy.ChooseTarget();
         if(enemy.AttackRoll())
         {
-            enemy.target.health -= 1;
-            enemy.target.Poisoned(2, Random.Range(1,3));
+            animator.SetTrigger("attack");
+            enemy.Attack(2, 3);
+            enemy.target.Poisoned(2, Random.Range(2, 4));
             enemy.CombatLog(gameObject.name + " poisoned " + enemy.target.name);
         }
         else
@@ -49,11 +50,13 @@ public class SnowWhite : MonoBehaviour
         enemy.EndTurn();
     }
 
+    //Debuff the target for -3 atk roll 
     public void Ability2()
     {
         enemy.ChooseTarget();
         if (enemy.AttackRoll())
         {
+            animator.SetTrigger("summon");
             enemy.target.TempAttackRoll(2, -3);
             enemy.CombatLog(gameObject.name + " debuffed " + enemy.target.name + "'s attack roll");
         }

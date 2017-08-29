@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class LevelManager : MonoBehaviour
 {
     public static LevelManager instance = null;
+    public List<GameObject> playerGroup = null;
 
     void Awake()
     {

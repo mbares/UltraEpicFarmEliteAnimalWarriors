@@ -1,18 +1,35 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class barScript : MonoBehaviour {
-     
-    private GameObject player;   
+
+    public Text statusText;
+    public Image content;
+
+    private static Player[] players;
+    private Player player;   
     private float fillAmount;   
-    private Image content;   
-    private Text statusText;
-    private int maxHealth;
+    private float maxHealth;
 
     private void Start()
     {
+        players = FindObjectsOfType<Player>();
+        switch (tag)
+        {
+            case "hb1":
+                player = players[0];
+                break;
+            case "hb2":
+                player = players[1];
+                break;
+            case "hb3":
+                player = players[2];
+                break;
+        }
         maxHealth = player.GetComponent<CharacterStats>().health;
+        GetComponentInChildren<Text>().text = player.name;
     }
 
     void Update () 
@@ -23,7 +40,7 @@ public class barScript : MonoBehaviour {
     void HealthBar()
     {        
         statusText.text = player.GetComponent<CharacterStats>().health.ToString();
-        fillAmount = player.GetComponent<CharacterStats>().health / 100;
+        fillAmount = player.GetComponent<CharacterStats>().health / maxHealth;
         content.fillAmount = fillAmount;
         if (player.GetComponent<CharacterStats>().health <= 0)
         {

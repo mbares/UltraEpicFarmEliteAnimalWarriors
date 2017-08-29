@@ -11,12 +11,12 @@ public class Enemy : MonoBehaviour
     public int bonusAttackRoll = 0;
     public CharacterStats target;
     public bool attacked = false;
-   
+    public string name;
 
     private void Start()
     {
         characterStats = GetComponent<CharacterStats>();
-        gameManager = GameObject.FindObjectOfType<GameManager>();
+        gameManager = FindObjectOfType<GameManager>();
     }
 
     public void ChooseTarget()
@@ -40,8 +40,16 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void Attack(int minDmg, int maxDmg, int bonusDamage = 0)
+    {
+        int damage = Random.Range(minDmg, maxDmg) + characterStats.bonusDamage + bonusDamage;
+        target.health -= damage;
+        CombatLog(name + " damaged " + target.name + " for " + damage + " damage");
+    }
+
     public bool AttackRoll()
     {
+        
         if ((Random.Range(1, 21) + characterStats.tempAttackRoll + bonusAttackRoll) >= (target.armor + target.tempArmor))
         {
             return true;
@@ -51,13 +59,19 @@ public class Enemy : MonoBehaviour
 
     public void EndTurn()
     {
-        attacked = false;
-        gameManager.NextTurn();
-        target = null;
+        Invoke("EndEnemyTurn", 1.5f);      
     }
 
     public void CombatLog(string log)
     {
         gameManager.CombatLog(log);
     }
+
+    private void EndEnemyTurn()
+    {
+        attacked = false;
+        gameManager.NextTurn();
+        target = null;
+    }    
+ 
 }

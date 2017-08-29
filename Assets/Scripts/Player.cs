@@ -8,7 +8,10 @@ public class Player : MonoBehaviour
     private GameManager gameManager;
 
     public CharacterStats target;
-    
+    public string ability1Text;
+    public string ability2Text;
+    public string ability3Text;
+    public string name;
 
     private void Start()
     {
@@ -23,6 +26,14 @@ public class Player : MonoBehaviour
             return true;
         }
         return false;
+    }
+
+    public int Attack(int minDmg, int maxDmg)
+    {
+        int damage = Random.Range(minDmg, maxDmg) + characterStats.bonusDamage;
+        target.health -= damage;
+        CombatLog(name + " damaged " + target.name + " for " + damage + " damage");
+        return damage;
     }
 
     public void ChooseTarget()
@@ -40,4 +51,54 @@ public class Player : MonoBehaviour
         gameManager.CombatLog(log);
     }
 
+    public void Ability1()
+    {
+        string tag = this.tag;
+        switch (tag)
+        {
+            case "cow":
+                GetComponent<Cow>().Ability1();
+                break;
+            case "horse":
+                GetComponent<Horse>().Ability1();
+                break;
+            case "chicken":
+                GetComponent<Chicken>().Ability1();
+                break;
+        }
+    }
+
+    public void Ability2()
+    {
+        string tag = this.tag;
+        switch (tag)
+        {
+            case "cow":
+                GetComponent<Cow>().Ability2();
+                break;
+            case "horse":
+                GetComponent<Horse>().Ability2();
+                break;
+            case "chicken":
+                GetComponent<Chicken>().Ability2();
+                break;
+        }
+    }
+
+    public void Ability3()
+    {
+        string tag = this.tag;
+        switch (tag)
+        {
+            case "cow":
+                GetComponent<Cow>().Ability3();
+                break;
+            case "horse":
+                GetComponent<Horse>().Ability3();
+                break;
+            case "chicken":
+                GetComponent<Chicken>().Ability3();
+                break;
+        }
+    }
 }

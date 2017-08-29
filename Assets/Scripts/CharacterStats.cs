@@ -67,6 +67,17 @@ public class CharacterStats : MonoBehaviour
 
         }
     }
+
+    public bool IsPoisoned()
+    {
+        return isPoisoned;
+    }
+
+    public void AddPoisonTurnCounter (int turns)
+    {
+        poisonTurnCounter += turns;
+    }
+
     void Die()
     {
         if (mouseTargetedCharacter = this.gameObject)

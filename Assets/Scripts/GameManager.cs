@@ -7,28 +7,30 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     private CharacterStats[] characters;
-    public List<CharacterStats> turnOrder = new List<CharacterStats>();
     private int turnCounter = 0;
     private LevelManager levelManager;
     private int combatLogCounter = 0;
-    
+    private CharacterStats characterOnTurn;
+
+    public Vector3[] playerPos;
+    public List<CharacterStats> turnOrder = new List<CharacterStats>();
     public GameObject players;
     public GameObject enemies;
     public Text combatLog;
     public Text turnText;
-    public Text ability1Cow;
-    public Text ability2Cow;
-    public Text ability3Cow;
-    public Text ability1Horse;
-    public Text ability2Horse;
-    public Text ability3Horse;
-    public Text ability1Chicken;
-    public Text ability2Chicken;
-    public Text ability3Chicken;
+    public Text ability1Button;
+    public Text ability2Button;
+    public Text ability3Button;
 
-    private void Start()
+
+    private void Awake()
     {
         levelManager = FindObjectOfType<LevelManager>();
+        List<GameObject> selectedPlayers = levelManager.playerGroup;
+        for (int i = 0; i < selectedPlayers.Count; i++)
+        {
+            Instantiate(selectedPlayers[i], playerPos[i], Quaternion.identity, players.transform);
+        }
         characters = GameObject.FindObjectsOfType<CharacterStats>();
         foreach(CharacterStats character in characters)
         {
@@ -36,10 +38,6 @@ public class GameManager : MonoBehaviour
         }
         turnOrder = turnOrder.OrderByDescending(turnOrder => turnOrder.initiative).ToList();
         NextTurn();
-        for(int i=0; i<turnOrder.Count; i++)
-        {
-            Debug.Log("Turn order " + i + ": " + turnOrder[i]);
-        }
         
     }
 
@@ -60,10 +58,6 @@ public class GameManager : MonoBehaviour
     {
         turnOrder.Add(newCharacter);
         turnOrder = turnOrder.OrderByDescending(turnOrder => turnOrder.initiative).ToList();
-        for (int i = 0; i < turnOrder.Count; i++)
-        {
-            Debug.Log("Turn order " + i + ": " + turnOrder[i]);
-        }
     }
 
     public void NextTurn()
@@ -71,12 +65,21 @@ public class GameManager : MonoBehaviour
         if (turnCounter >= turnOrder.Count)
         {
             turnCounter = 0;
+        }        
+        characterOnTurn = turnOrder[turnCounter];
+        CharacterStats.onTurn = characterOnTurn;
+        characterOnTurn.TurnStatCalculation();
+        if(characterOnTurn.isFriendly)
+        {
+            turnText.text = characterOnTurn.GetComponent<Player>().name + " on turn";
         }
-        Abilities();
-        CharacterStats.onTurn = turnOrder[turnCounter];
-        turnOrder[turnCounter].TurnStatCalculation();
-        turnText.text = turnOrder[turnCounter].gameObject.name + " on turn ";
-        
+        else
+        {
+            turnText.text = characterOnTurn.GetComponent<Enemy>().name + " on turn ";
+        }
+         
+        playerAbilities();
+
         turnCounter++;
         if(turnCounter >= turnOrder.Count)
         {
@@ -98,66 +101,36 @@ public class GameManager : MonoBehaviour
         combatLogCounter++;
     }
 
-    public void Abilities()
+    public void playerAbilities()
     {
-        if(turnOrder[turnCounter].gameObject.name == "Cow")
+        if (characterOnTurn.isFriendly)
         {
-            ability1Cow.gameObject.SetActive(true);
-            ability2Cow.gameObject.SetActive(true);
-            ability3Cow.gameObject.SetActive(true);
-
-            ability1Horse.gameObject.SetActive(false);
-            ability2Horse.gameObject.SetActive(false);
-            ability3Horse.gameObject.SetActive(false);
-
-            ability1Chicken.gameObject.SetActive(false);
-            ability2Chicken.gameObject.SetActive(false);
-            ability3Chicken.gameObject.SetActive(false);
-
-
-        }
-        else if(turnOrder[turnCounter].gameObject.name == "Horse")
-        {
-            ability1Horse.gameObject.SetActive(true);
-            ability2Horse.gameObject.SetActive(true);
-            ability3Horse.gameObject.SetActive(true);
-
-            ability1Cow.gameObject.SetActive(false);
-            ability2Cow.gameObject.SetActive(false);
-            ability3Cow.gameObject.SetActive(false);
-
-            ability1Chicken.gameObject.SetActive(false);
-            ability2Chicken.gameObject.SetActive(false);
-            ability3Chicken.gameObject.SetActive(false);
-        }
-        else if(turnOrder[turnCounter].gameObject.name == "Chicken")
-        {
-            ability1Chicken.gameObject.SetActive(true);
-            ability2Chicken.gameObject.SetActive(true);
-            ability3Chicken.gameObject.SetActive(true);
-
-            ability1Cow.gameObject.SetActive(false);
-            ability2Cow.gameObject.SetActive(false);
-            ability3Cow.gameObject.SetActive(false);
-
-            ability1Horse.gameObject.SetActive(false);
-            ability2Horse.gameObject.SetActive(false);
-            ability3Horse.gameObject.SetActive(false);
+            Player player = characterOnTurn.GetComponent<Player>();
+            ability1Button.text = player.ability1Text;
+            ability2Button.text = player.ability2Text;
+            ability3Button.text = player.ability3Text;
         }
         else
         {
-            ability1Cow.gameObject.SetActive(false);
-            ability2Cow.gameObject.SetActive(false);
-            ability3Cow.gameObject.SetActive(false);
-
-            ability1Horse.gameObject.SetActive(false);
-            ability2Horse.gameObject.SetActive(false);
-            ability3Horse.gameObject.SetActive(false);
-
-            ability1Chicken.gameObject.SetActive(false);
-            ability2Chicken.gameObject.SetActive(false);
-            ability3Chicken.gameObject.SetActive(false);
+            ability1Button.text = "";
+            ability2Button.text = "";
+            ability3Button.text = "";
         }
+    }
+
+    public void playerAbility1()
+    {
+        characterOnTurn.GetComponent<Player>().Ability1();
+    }
+
+    public void playerAbility2()
+    {
+        characterOnTurn.GetComponent<Player>().Ability2();
+    }
+
+    public void playerAbility3()
+    {
+        characterOnTurn.GetComponent<Player>().Ability3();
     }
 
 }

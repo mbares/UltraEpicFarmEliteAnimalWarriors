@@ -16,7 +16,7 @@ public class Dwarf : MonoBehaviour
         if (CharacterStats.onTurn == this.GetComponent<CharacterStats>() && !enemy.attacked)
         {
             enemy.attacked = true;
-            Attack();           
+            Invoke("Attack", 2f);           
         }
     }
 
@@ -25,9 +25,7 @@ public class Dwarf : MonoBehaviour
         enemy.ChooseTarget();
         if (enemy.AttackRoll())
         {
-            int damage = Random.Range(1, 3);
-            enemy.target.health -= damage;
-            enemy.CombatLog(gameObject.name + " damaged " + enemy.target.name + " for " + damage + " damage");
+            enemy.Attack(1, 4);
         }
         else
         {
