@@ -44,7 +44,7 @@ public class Enemy : MonoBehaviour
     {
         int damage = Random.Range(minDmg, maxDmg) + characterStats.bonusDamage + bonusDamage;
         target.health -= damage;
-        CombatLog(name + " damaged " + target.name + " for " + damage + " damage");
+        CombatLog(name + " damaged " + target.GetComponent<Player>().name + " for " + damage + " damage");
     }
 
     public bool AttackRoll()
