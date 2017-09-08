@@ -22,4 +22,9 @@ public class StartButton : MonoBehaviour {
             Debug.Log("Choose party");
         }
     }
+
+    public void Back()
+    {
+        levelManager.LoadLevel("00a_Start_Menu");
+    }
 }

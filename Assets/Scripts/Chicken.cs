@@ -15,7 +15,7 @@ public class Chicken : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-    //Attack enemy target for 2-6 dmg
+    //Attack enemy target for 2-8 dmg
     public void Ability1()
     {
         player.ChooseTarget();
@@ -30,20 +30,19 @@ public class Chicken : MonoBehaviour
         else if (player.AttackRoll())
         {
             animator.SetTrigger("attack");
-            player.Attack(2, 7);
+            player.Attack(2, 9);
             player.EndTurn();
         }
         else
         {
-            player.CombatLog(gameObject.name + " missed while trying to attack " + player.target.name);
             player.EndTurn();
         }
     }
 
-    //Attack all enemies for  1-4 dmg
+    //Attack all enemies for  1-3 dmg
     public void Ability2()
     {
-        possibleTargets = GameObject.FindObjectsOfType<CharacterStats>();
+        possibleTargets = FindObjectsOfType<CharacterStats>();
         foreach (CharacterStats character in possibleTargets)
         {
             if (!character.isFriendly)
@@ -51,21 +50,22 @@ public class Chicken : MonoBehaviour
                 player.target = character;
                 if (player.AttackRoll())
                 {
-                    animator.SetTrigger("fire");
-                    player.Attack(1, 5);
+                    player.Attack(1, 4);
                 }
             }
         }
+        animator.SetTrigger("fire");
         player.EndTurn();
     }
 
     //Self buff for +2 dmg but -1 atk roll for 2 turns
     public void Ability3()
     {
-        player.CombatLog(gameObject.name + "buffed himself +2dmg -1atk roll for 2 turns");
+        player.CombatLog(player.name + " buffed himself for +2 damage but debuffed his attack roll for -1 for 2 turns");
         CharacterStats characterStats = GetComponent<CharacterStats>();
-        characterStats.TempAttackRoll(2, -1);
-        characterStats.BonusDamage(2, 2);
+        characterStats.StatusEffect(new Color(1, 0.65f, 0.16f));
+        characterStats.SetTempAttackRoll(3, -1);
+        characterStats.SetBonusDamage(3, 2);
         player.EndTurn();
     }
 }

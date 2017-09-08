@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Character4 : MonoBehaviour
+public class Sheep : MonoBehaviour
 {
     private Player player;
     private Animator animator;
@@ -15,7 +15,7 @@ public class Character4 : MonoBehaviour
         player = GetComponent<Player>();
     }
 
-    //Attack enemy target for 2-8 dmg and steal health equal to half the damage done
+    //Attack enemy target for 2-6 dmg and steal health equal to half the damage done
     public void Ability1()
     {
         player.ChooseTarget();
@@ -30,43 +30,64 @@ public class Character4 : MonoBehaviour
         else if (player.AttackRoll())
         {
             animator.SetTrigger("attack");
-            int damage = player.Attack(2, 9);
-            characterStats.health += damage/2;
-            player.CombatLog(gameObject.name + " healed himself for " + damage / 2);
+            int damage = player.Attack(2, 7);
+            characterStats.IncreaseHealth(damage / 2);
+            player.CombatLog(player.name + " healed herself for " + damage / 2);
             player.EndTurn();
         }
         else
         {
-            player.CombatLog(gameObject.name + " missed while trying to attack " + player.target.name);
             player.EndTurn();
         }
 
     }
 
-    //Heal all friendly targets for 2 but damage self for 4
+    //Heal all friendly targets for 3 and give them +2 armor and +1 attack roll for 2 turns but damage self for 5
     public void Ability2()
     {
         CharacterStats[] possibleTargets;
-        possibleTargets = GameObject.FindObjectsOfType<CharacterStats>();
+        possibleTargets = FindObjectsOfType<CharacterStats>();
         foreach (CharacterStats character in possibleTargets)
         {
             if (character.isFriendly && character.gameObject != this.gameObject)
             {
-                character.health += 2;
-                player.CombatLog(character + " healed for 2");
+                character.IncreaseHealth(3);
+                character.SetTempArmor(2, 2);
+                character.SetTempAttackRoll(2, 1);
+                character.StatusEffect(new Color(1f, 0.96f, 0f));
+                player.CombatLog(character.GetComponent<Player>().name + " healed for 3 and has +2 armor and + 1 atk roll for 1 turn");
             }
         }
-        characterStats.health -= 4;
-        player.CombatLog(gameObject.name + " suffers 4 damage for healing his party members");
+        characterStats.ReduceHealth(5);
+        player.CombatLog(player.name + " suffers 5 damage for healing her party members");
         player.EndTurn();
     }
 
-    //Heal self
+    //Heal friendly target for 2-6 and self for half
     public void Ability3()
     {
-        characterStats.health += 4;
-        player.CombatLog(gameObject.name + " healed himself for 4");
-        player.EndTurn();
+        Player[] players = FindObjectsOfType<Player>();
+        player.ChooseTarget();
+        if (!player.target && players.Length > 1)
+        {
+            player.CombatLog("Select friendly target");
+        }
+        else if (!player.target.isFriendly)
+        {
+            player.CombatLog("Can't heal enemy target");
+        }
+        else
+        {
+            int heal = Random.Range(2, 7);
+            characterStats.IncreaseHealth(heal / 2);
+            player.CombatLog(player.name + " healed herself for " + heal);
+            if (player.target != characterStats)
+            {
+                player.target.IncreaseHealth(heal);
+                player.CombatLog(player.name + " healed " + player.target.GetComponent<Player>().name + " for " + heal / 2);
+            }
+            player.EndTurn();
+        }
     }
 
 }

@@ -4,27 +4,52 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    private CharacterStats characterStats;    
-    private CharacterStats[] possibleTargets;
-    private GameManager gameManager;
-
-    public int bonusAttackRoll = 0;
     public CharacterStats target;
     public bool attacked = false;
     public string name;
+
+    private CharacterStats characterStats;    
+    private CharacterStats[] possibleTargets;
+    private GameManager gameManager;
+    private int maxHealth;
+    private bool badMessageSent = false;
+    private bool worseMessageSent = false;
+    private bool worstMessageSent = false;
+
 
     private void Start()
     {
         characterStats = GetComponent<CharacterStats>();
         gameManager = FindObjectOfType<GameManager>();
+        maxHealth = characterStats.maxHealth;
+    }
+
+    private void Update()
+    {
+        if (((float)characterStats.GetHealth() / (float)maxHealth) < 0.5f && !badMessageSent && !characterStats.dead)
+        {
+            badMessageSent = true;
+            CombatLog(name + " is starting to look bad");
+        }
+        
+        else if (((float)characterStats.GetHealth() / (float)maxHealth) < 0.25f && !worseMessageSent && !characterStats.dead)
+        {
+            worseMessageSent = true;
+            CombatLog(name + " is looking really bad ");
+        }
+        else if (((float)characterStats.GetHealth() / (float)maxHealth) < 0.1f && !worstMessageSent && !characterStats.dead)
+        {
+            worstMessageSent = true;
+            CombatLog(name + " is looking really, really bad ");
+        }
     }
 
     public void ChooseTarget()
     {        
-        possibleTargets = GameObject.FindObjectsOfType<CharacterStats>();        
+        possibleTargets = FindObjectsOfType<CharacterStats>();        
         foreach (CharacterStats character in possibleTargets)
         {
-            if(character.isFriendly && character.taunt)
+            if(character.isFriendly && character.IsTaunting())
             {               
                 target = character;              
                 return;
@@ -40,26 +65,26 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void Attack(int minDmg, int maxDmg, int bonusDamage = 0)
+    public void Attack(int minDmg, int maxDmg, int extraDamage = 0)
     {
-        int damage = Random.Range(minDmg, maxDmg) + characterStats.bonusDamage + bonusDamage;
-        target.health -= damage;
+        int damage = Random.Range(minDmg, maxDmg) + characterStats.GetBonusDamage() + characterStats.GetDifficultyDamage() + extraDamage;
+        target.ReduceHealth(damage);
         CombatLog(name + " damaged " + target.GetComponent<Player>().name + " for " + damage + " damage");
     }
 
     public bool AttackRoll()
     {
-        
-        if ((Random.Range(1, 21) + characterStats.tempAttackRoll + bonusAttackRoll) >= (target.armor + target.tempArmor))
+        if ((Random.Range(1, 21) + characterStats.GetTempAttackRoll() + characterStats.GetDifficultyAttackRoll() + characterStats.attackRoll) >= (target.armor + target.GetTempArmor()))
         {
             return true;
         }
+        CombatLog(name + " missed while trying to attack " + target.GetComponent<Player>().name);
         return false;
     }
 
     public void EndTurn()
     {
-        Invoke("EndEnemyTurn", 1.5f);      
+        Invoke("EndEnemyTurn", 1.5f);    
     }
 
     public void CombatLog(string log)

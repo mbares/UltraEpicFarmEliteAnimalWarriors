@@ -30,18 +30,14 @@ public class BigBadWolf : MonoBehaviour
         Ability1();
     }
 
-    //Attack one target twice or two targets once for 3-5 dmg
+    //Attack one target twice or two targets once for 2-4 dmg
     public void Ability1()
     {
         enemy.ChooseTarget();
         if (enemy.AttackRoll())
         {
             animator.SetTrigger("attack");
-            enemy.Attack(3, 6);
-        }
-        else
-        {
-            enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+            enemy.Attack(2, 6);
         }
         if(doDoubleAttack)
         {

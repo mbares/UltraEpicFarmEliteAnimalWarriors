@@ -36,7 +36,6 @@ public class Cow : MonoBehaviour
         }
         else
         {
-            player.CombatLog(player.name + " missed while trying to attack " + player.target.name);
             player.EndTurn();
         }
     }
@@ -45,7 +44,7 @@ public class Cow : MonoBehaviour
     public void Ability2()
     {
         animator.SetTrigger("taunt");
-        characterStats.taunt = true;
+        characterStats.SetTaunting(true);
         player.CombatLog("Taunt activated");
         player.EndTurn();
     }
@@ -64,8 +63,9 @@ public class Cow : MonoBehaviour
         }
         else
         {            
-            player.target.TempArmor(2, 2);
-            player.CombatLog("Buffed " + player.target.name);
+            player.target.SetTempArmor(3, 2);
+            player.target.StatusEffect(Color.white);
+            player.CombatLog("Buffed " + player.target.GetComponent<Player>().name + "'s armor by 2 for 2 turns");
             player.EndTurn();
         }
 

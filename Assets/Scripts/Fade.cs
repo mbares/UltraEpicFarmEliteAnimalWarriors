@@ -19,7 +19,7 @@ public class Fade : MonoBehaviour {
 
     void Update()
     {
-        if (Time.timeSinceLevelLoad >= fadeTime && Input.GetKey(KeyCode.Space))
+        if (Time.timeSinceLevelLoad >= 0.5f && Input.GetKey(KeyCode.Space))
         {
             panel = GetComponent<Image>();
             panel.CrossFadeAlpha(1, fadeTime, false);
@@ -29,9 +29,9 @@ public class Fade : MonoBehaviour {
 
     void NextLevel()
     {
-        if(SceneManager.GetActiveScene().name == "Lose" || SceneManager.GetActiveScene().name == "Win")
+        if(SceneManager.GetActiveScene().name == "03b_Lose" || SceneManager.GetActiveScene().name == "03a_Win")
         {
-            levelManager.LoadLevel("Start Menu");
+            levelManager.LoadLevel("00a_Start_Menu");
         }
         else
         {

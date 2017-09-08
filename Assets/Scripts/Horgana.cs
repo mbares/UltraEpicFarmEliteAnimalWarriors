@@ -8,6 +8,8 @@ public class Horgana : MonoBehaviour
     private Enemy enemy;
     private CharacterStats[] possibleTargets;
     private Animator animator;
+    private bool usedDebuff = false;
+    int debuffTurnCounter = 0;
 
     private void Start()
     {
@@ -17,7 +19,7 @@ public class Horgana : MonoBehaviour
 
     private void Update()
     {
-        if (CharacterStats.onTurn == this.GetComponent<CharacterStats>() && !enemy.attacked)
+        if (CharacterStats.onTurn == GetComponent<CharacterStats>() && !enemy.attacked)
         {
             enemy.attacked = true;
             Attack();           
@@ -27,29 +29,36 @@ public class Horgana : MonoBehaviour
     public void Attack()
     {
         int randomAbility;
+        
+        if (usedDebuff && debuffTurnCounter < 2)
+        {
+            randomAbility = Random.Range(1, 3);
+            debuffTurnCounter++;
+        }
+        else
+        {
+            debuffTurnCounter = 0;
+            usedDebuff = false;
+            randomAbility = Random.Range(1, 4);
+        }
        
-        randomAbility = Random.Range(1, 4);
         string ability = "Ability" + randomAbility.ToString();
         Invoke(ability, 2f);
     }
 
-    //Attack a target for 3-5 dmg
+    //Attack a target for 4-8 dmg
     public void Ability1()
     {
         enemy.ChooseTarget();
         if (enemy.AttackRoll())
         {
             animator.SetTrigger("boogie");
-            enemy.Attack(3, 6);
-        }
-        else
-        {
-            enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+            enemy.Attack(4, 9);
         }
         enemy.EndTurn();
     }
 
-    //Attack all targets for 2 dmg
+    //Attack all targets for 2 - 5 dmg
     public void Ability2()
     {
         possibleTargets = GameObject.FindObjectsOfType<CharacterStats>();
@@ -61,11 +70,7 @@ public class Horgana : MonoBehaviour
                 if (enemy.AttackRoll())
                 {
                     animator.SetTrigger("fire");
-                    enemy.Attack(2, 3);
-                }
-                else
-                {
-                    enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+                    enemy.Attack(2, 6);
                 }
             }
         }
@@ -75,7 +80,8 @@ public class Horgana : MonoBehaviour
     //Debuff all targets for -3 armor for 3 turns
     public void Ability3()
     {
-        possibleTargets = GameObject.FindObjectsOfType<CharacterStats>();
+        usedDebuff = true;
+        possibleTargets = FindObjectsOfType<CharacterStats>();
         foreach (CharacterStats character in possibleTargets)
         {
             if (character.isFriendly)
@@ -84,12 +90,9 @@ public class Horgana : MonoBehaviour
                 if (enemy.AttackRoll())
                 {
                     animator.SetTrigger("blah");
-                    enemy.target.TempArmor(3, -3);
-                    enemy.CombatLog(gameObject.name + " debuffed " + enemy.target.name + "'s armor");
-                }
-                else
-                {
-                    enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+                    enemy.target.SetTempArmor(3, -3);
+                    enemy.target.StatusEffect(new Color(0.22f, 0, 0.02f));
+                    enemy.CombatLog(gameObject.name + " debuffed " + enemy.target.GetComponent<Player>().name + "'s armor");
                 }
             }
         }

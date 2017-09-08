@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class LittlePig : MonoBehaviour
 {
-    public GameObject[] dwarves;
-
     private CharacterStats characterStats;
     private Enemy enemy;
     private Animator animator;
@@ -24,46 +22,51 @@ public class LittlePig : MonoBehaviour
 
     private void Update()
     {
-        if (CharacterStats.onTurn == this.GetComponent<CharacterStats>() && !enemy.attacked)
+        if (CharacterStats.onTurn == GetComponent<CharacterStats>() && !enemy.attacked)
         {
             enemy.attacked = true;
             Attack();
         }   
         
-        if (GameObject.FindObjectsOfType<LittlePig>().Length == 2 && !naturalArmorBoosted)
+        if (FindObjectsOfType<LittlePig>().Length == 2 && !naturalArmorBoosted)
         {
             naturalArmorBoosted = true;
             naturalArmor = 3;
             characterStats.armor += 2;
+            characterStats.StatusEffect(Color.white);
+            enemy.CombatLog(enemy.name + " looks more determined after you killed his brother");
         }
-        else if (GameObject.FindObjectsOfType<LittlePig>().Length == 1 && !naturalArmorBoosted2)
+        else if (FindObjectsOfType<LittlePig>().Length == 1 && !naturalArmorBoosted2)
         {
             naturalArmorBoosted2 = true;
             naturalArmor = 5;
             characterStats.armor += 2;
+            characterStats.StatusEffect(Color.white);
+            enemy.CombatLog(enemy.name + " looks so determined after you killed his brother that his name is now Determinator");
+            enemy.name = "Determinator";
         }
     }
 
     public void Attack()
     {
-        int randomAbility;
-        randomAbility = Random.Range(1, 3);
-        string ability = "Ability" + randomAbility.ToString();
-        Invoke(ability, 2f);
+        if (Random.Range(1, 6) % 2 == 0)
+        {
+            Invoke("Ability2", 2f);
+        }
+        else
+        {
+            Invoke("Ability1", 2f);
+        }
     }
 
-    //Attack for 2-4dmg + tempArmor
+    //Attack for 2-5 dmg + tempArmor
     public void Ability1()
     {
         enemy.ChooseTarget();
         if (enemy.AttackRoll())
         {
             animator.SetTrigger("attack");
-            enemy.Attack(2, 5, naturalArmor + characterStats.tempArmor);           
-        }
-        else
-        {
-            enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+            enemy.Attack(2, 6, naturalArmor + characterStats.GetTempArmor());           
         }
         enemy.EndTurn();
     }
@@ -71,8 +74,9 @@ public class LittlePig : MonoBehaviour
     //Buff self for +2 armor for 1 turn
     public void Ability2()
     {
-        characterStats.TempArmor(1,2);
-        enemy.CombatLog(gameObject.name + " missed while trying to attack " + enemy.target.name);
+        characterStats.SetTempArmor(2,2);
+        characterStats.StatusEffect(Color.white);
+        enemy.CombatLog(enemy.name + " buffs himself for +2 armor for 1 turn");
         enemy.EndTurn();
     }
 

@@ -19,16 +19,18 @@ public class barScript : MonoBehaviour {
         switch (tag)
         {
             case "hb1":
-                player = players[0];
+                player = players[2];
                 break;
             case "hb2":
                 player = players[1];
                 break;
             case "hb3":
-                player = players[2];
+                player = players[0];
+                break;
+            default:
                 break;
         }
-        maxHealth = player.GetComponent<CharacterStats>().health;
+        maxHealth = player.GetComponent<CharacterStats>().maxHealth;
         GetComponentInChildren<Text>().text = player.name;
     }
 
@@ -37,15 +39,24 @@ public class barScript : MonoBehaviour {
         HealthBar();       
 	}
 
+    public void TargetOnClick()
+    {
+        if (player != null)
+        {
+            CharacterStats.mouseTargetedCharacter = player.gameObject;
+        }
+    }
+
     void HealthBar()
-    {        
-        statusText.text = player.GetComponent<CharacterStats>().health.ToString();
-        fillAmount = player.GetComponent<CharacterStats>().health / maxHealth;
-        content.fillAmount = fillAmount;
-        if (player.GetComponent<CharacterStats>().health <= 0)
+    {
+        if (player == null)
         {
             statusText.text = "DEAD";
-        }        
+            return;
+        }
+        statusText.text = player.GetComponent<CharacterStats>().GetHealth().ToString();
+        fillAmount = player.GetComponent<CharacterStats>().GetHealth() / maxHealth;
+        content.fillAmount = fillAmount;
     }
-   
+
  }

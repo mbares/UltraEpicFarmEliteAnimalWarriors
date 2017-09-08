@@ -6,8 +6,14 @@ public class MusicPlayer : MonoBehaviour {
 
     public static MusicPlayer instance = null;
 
+    public AudioClip[] clips;
+
+    private AudioSource audioSource;
+
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.volume = PlayerPrefsManager.GetMasterVolume() ;
         if (instance == null)
         {
             instance = this;
@@ -18,5 +24,16 @@ public class MusicPlayer : MonoBehaviour {
         }
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    public void SetVolume(float volume)
+    {
+        audioSource.volume = volume;
+    }
+
+    public void SetClip(int clipIndex)
+    {
+        audioSource.clip = clips[clipIndex];
+        audioSource.Play();
     }
 }

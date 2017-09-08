@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,12 +11,15 @@ public class GameManager : MonoBehaviour
     private int turnCounter = 0;
     private LevelManager levelManager;
     private int combatLogCounter = 0;
+    private int scrollCounter = 0;
     private CharacterStats characterOnTurn;
 
-    public Vector3[] playerPos;
     public List<CharacterStats> turnOrder = new List<CharacterStats>();
+    public GameObject menu;
     public GameObject players;
+    public GameObject[] playerPositions;
     public GameObject enemies;
+    public Scrollbar scrollbar;
     public Text combatLog;
     public Text turnText;
     public Text ability1Button;
@@ -29,11 +33,12 @@ public class GameManager : MonoBehaviour
         List<GameObject> selectedPlayers = levelManager.playerGroup;
         for (int i = 0; i < selectedPlayers.Count; i++)
         {
-            Instantiate(selectedPlayers[i], playerPos[i], Quaternion.identity, players.transform);
+            Instantiate(selectedPlayers[i], playerPositions[i].transform.position, Quaternion.identity, playerPositions[i].transform);
         }
-        characters = GameObject.FindObjectsOfType<CharacterStats>();
+        characters = FindObjectsOfType<CharacterStats>();
         foreach(CharacterStats character in characters)
         {
+            character.initiative += Random.Range(1, 21);
             turnOrder.Add(character);
         }
         turnOrder = turnOrder.OrderByDescending(turnOrder => turnOrder.initiative).ToList();
@@ -43,21 +48,20 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(players.transform.childCount == 0)
+        if (players.transform.childCount == 0)
         {
-            levelManager.LoadLevel("Lose");
+            levelManager.LoadLevel("03b_Lose");
         }
 
-        if (enemies.transform.childCount == 0)
+        if (enemies.transform.childCount == 0 || (SceneManager.GetActiveScene().buildIndex == 4 && FindObjectOfType<SnowWhite>() == null))
         {
             levelManager.NextLevel();
         }
-    }
 
-    public void AddCharacterToTurnOrder(CharacterStats newCharacter)
-    {
-        turnOrder.Add(newCharacter);
-        turnOrder = turnOrder.OrderByDescending(turnOrder => turnOrder.initiative).ToList();
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            menu.SetActive(!menu.activeInHierarchy);
+        }
     }
 
     public void NextTurn()
@@ -89,16 +93,29 @@ public class GameManager : MonoBehaviour
 
     public void CombatLog(string log)
     {
-        if(combatLogCounter >= 8)
+        if (combatLogCounter >= 50)
         {
             combatLog.text = log + "\n";
             combatLogCounter = 0;
+            scrollCounter = 3;
+            scrollbar.value = 1;
         }
         else
         {
             combatLog.text += log + "\n";
         }
+        if (log.Length > 65)
+        {
+            scrollCounter++;
+            combatLogCounter++;
+        }
+        scrollCounter++;
         combatLogCounter++;
+        if (scrollCounter == 7 || scrollCounter == 8)
+        {
+            scrollbar.value -= 0.08f;
+            scrollCounter = 3;
+        }
     }
 
     public void playerAbilities()

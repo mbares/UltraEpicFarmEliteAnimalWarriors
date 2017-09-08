@@ -33,13 +33,12 @@ public class Horse : MonoBehaviour
         }
         else
         {
-            player.CombatLog(player.name + " missed while trying to attack " + player.target.name);
             player.EndTurn();
         }
        
     }
 
-    //Heal friendly target for 1-6
+    //Heal friendly target for 3-9
     public void Ability2()
     {
         player.ChooseTarget();
@@ -54,12 +53,11 @@ public class Horse : MonoBehaviour
         else
         {
             animator.SetTrigger("heal");
-            int heal = Random.Range(1, 7);
-            player.target.health += heal;
-            player.CombatLog(player.name + " healed " + player.target.name + " for " + heal);
+            int heal = Random.Range(3, 10);
+            player.target.IncreaseHealth(heal);
+            player.CombatLog(player.name + " healed " + player.target.GetComponent<Player>().name + " for " + heal);
             player.EndTurn();
         }
-
     }
 
     //Debuff enemy target's atk roll and armor by -2 for 2 turns
@@ -76,14 +74,14 @@ public class Horse : MonoBehaviour
         }        
         else if (player.AttackRoll())
         {
-            player.CombatLog(player.name + " debuffed " + player.target.name + "'s armor and attack roll");
-            player.target.TempAttackRoll(2, -2);
-            player.target.TempArmor(2, -2);
+            player.CombatLog(player.name + " debuffed " + player.target.GetComponent<Enemy>().name + "'s armor for -2 and attack roll for -2 for 2 turns.");
+            player.target.StatusEffect(new Color(0.2f, 0.2f, 0.2f));
+            player.target.SetTempAttackRoll(2, -2);
+            player.target.SetTempArmor(2, -2);
             player.EndTurn();
         }
         else
         {
-            player.CombatLog(player.name + " missed while trying to attack " + player.target.name);
             player.EndTurn();
         }
        

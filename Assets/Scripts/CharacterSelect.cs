@@ -1,11 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterSelect : MonoBehaviour {
 
     public GameObject character;
-
+    public Text descriptionText;
+    public string description;
+    
     private bool selected = false;
     private bool alphaChangeable = true;
     private SpriteRenderer spriteRenderer;
@@ -35,7 +38,8 @@ public class CharacterSelect : MonoBehaviour {
         if (!selected && levelManager.playerGroup.Count < 3)
         {
             changeAlpha(0.5f);
-        }          
+        }
+        descriptionText.text = description;
     }
 
     private void OnMouseExit()
@@ -44,6 +48,7 @@ public class CharacterSelect : MonoBehaviour {
         {
             changeAlpha(0.1f);
         }
+        descriptionText.text = "";
     }
 
     private void OnMouseDown()

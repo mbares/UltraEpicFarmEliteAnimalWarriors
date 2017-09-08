@@ -21,24 +21,28 @@ public class Player : MonoBehaviour
 
     public bool AttackRoll()
     {        
-        if ((Random.Range(1, 21) + characterStats.tempAttackRoll) >= (target.armor + target.tempArmor))
+        if ((Random.Range(1, 21) + characterStats.GetTempAttackRoll() + characterStats.attackRoll) >= (target.armor + target.GetTempArmor()))
         {
             return true;
         }
+        CombatLog(name + " missed while trying to attack " + target.GetComponent<Enemy>().name);
         return false;
     }
 
     public int Attack(int minDmg, int maxDmg)
     {
-        int damage = Random.Range(minDmg, maxDmg) + characterStats.bonusDamage;
-        target.health -= damage;
-        CombatLog(name + " damaged " + target.name + " for " + damage + " damage");
+        int damage = Random.Range(minDmg, maxDmg) + characterStats.GetBonusDamage();
+        CombatLog(name + " damaged " + target.GetComponent<Enemy>().name + " for " + damage + " damage");
+        target.ReduceHealth(damage);
         return damage;
     }
 
     public void ChooseTarget()
     {
-        target = CharacterStats.mouseTargetedCharacter.GetComponent<CharacterStats>();
+        if (CharacterStats.mouseTargetedCharacter.GetComponent<CharacterStats>() != null)
+        {
+            target = CharacterStats.mouseTargetedCharacter.GetComponent<CharacterStats>();
+        }
     }
 
     public void EndTurn()
@@ -65,6 +69,12 @@ public class Player : MonoBehaviour
             case "chicken":
                 GetComponent<Chicken>().Ability1();
                 break;
+            case "rabbit":
+                GetComponent<Rabbit>().Ability1();
+                break;
+            case "sheep":
+                GetComponent<Sheep>().Ability1();
+                break;
         }
     }
 
@@ -82,6 +92,12 @@ public class Player : MonoBehaviour
             case "chicken":
                 GetComponent<Chicken>().Ability2();
                 break;
+            case "rabbit":
+                GetComponent<Rabbit>().Ability2();
+                break;
+            case "sheep":
+                GetComponent<Sheep>().Ability2();
+                break;
         }
     }
 
@@ -98,6 +114,12 @@ public class Player : MonoBehaviour
                 break;
             case "chicken":
                 GetComponent<Chicken>().Ability3();
+                break;
+            case "rabbit":
+                GetComponent<Rabbit>().Ability3();
+                break;
+            case "sheep":
+                GetComponent<Sheep>().Ability3();
                 break;
         }
     }
